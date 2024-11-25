@@ -1,16 +1,18 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api",
+    "description": "200: serves up a json representation of all the available endpoints of the api",
     "queries": []
   },
+
   "GET /api/topics": {
-    "description": "serves an array of all topics",
+    "description": "200: serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "description": "Not dogs", "slug": "cats" }]
-    },
+      "topics": [{ "description": "Not dogs", "slug": "cats" }]}
+  },
+
   "GET /api/articles/:article_id": {
-    "description": "serves the correct article object when valid article_id provided",
+    "description": "200: serves the correct article object when valid article_id provided",
     "queries": [],
     "exampleResponse": {
       "articles": [
@@ -26,10 +28,10 @@
         }
       ]
     }
-  }
   },
+  
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "200: serves an array of all articles",
     "queries": [],
     "exampleResponse": {
       "articles": [
@@ -42,6 +44,31 @@
           "votes": 100,
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           "comment_count": 11
+        }
+      ]
+    }
+  },
+
+  "GET /api/articles/:article_id/comments": {
+    "description": "200: serves an array of all comments for the given article_id",
+    "queries": [],
+    "exampleResponse": {
+      "comments": [
+        {
+          "comment_id": 11,
+          "votes": 0,
+          "created_at": "2020-09-20 00:10:00",
+          "author": "icellusedkars",
+          "body": "Ambidextrous marsupial",
+          "article_id": 3
+        },
+        {
+          "comment_id": 10,
+          "votes": 0,
+          "created_at": "2020-06-20 08:24:00",
+          "author": "icellusedkars",
+          "body": "git push origin master",
+          "article_id": 3
         }
       ]
     }
