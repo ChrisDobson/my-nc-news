@@ -10,7 +10,7 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("GET /api", () => {
-  test("200: Responds with an object detailing the documentation for each endpoint", () => {
+  test("200: serves up a json representation of all the available endpoints of the api", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -19,3 +19,23 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe('GET /api/topics', () => {
+  test('200: serves an array of all topics', () => {
+    return request(app)
+    .get('/api/topics')
+    .expect(200)
+    .then(({body}) => {
+      const { topics } = body;
+      expect(Array.isArray(topics)).toBe(true);
+      topics.forEach((topic) => {
+        expect(topic).toEqual(
+          expect.objectContaining({
+            slug: expect.any(String),
+            description: expect.any(String),
+          })
+        );
+      });
+      });
+    });
+  });
