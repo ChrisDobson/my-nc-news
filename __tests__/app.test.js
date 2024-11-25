@@ -107,6 +107,7 @@ describe('GET /api/:article_id/comments', () => {
       const { comments } = body;
       expect(Array.isArray(comments)).toBe(true);
       expect(comments).toHaveLength(2);
+      expect(comments).toBeSortedBy("created_at", { descending: true });
       comments.forEach((comment) => {
         expect(comment).toEqual(
           expect.objectContaining({
@@ -122,3 +123,5 @@ describe('GET /api/:article_id/comments', () => {
       });
     });
   });
+
+  //TASK 7

@@ -8,6 +8,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getSingleArticle);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getComments);
+//TASK 7
 
 app.all("*", handleNotFoundErrors);
 app.use(handleCustomErrors);
