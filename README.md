@@ -1,8 +1,8 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
-
-
+A note for anyone wishing to clone this repo: you will need to add a .env.test file and a .env.development file, with the following contents:
+.env.test >>>> PGDATABASE=nc_news_test
+.env.development >>>> PGDATABASE=nc_news
 
 --- 
 
