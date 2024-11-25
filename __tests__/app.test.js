@@ -10,6 +10,7 @@ beforeEach(() => seed(data));
 
 afterAll(() => db.end());
 
+//TASK 2
 describe("GET /api", () => {
   test("200: serves up a json representation of all the available endpoints of the api", () => {
     return request(app)
@@ -21,6 +22,7 @@ describe("GET /api", () => {
   });
 });
 
+//TASK 3
 describe('GET /api/topics', () => {
   test('200: serves an array of all topics', () => {
     return request(app)
@@ -42,8 +44,9 @@ describe('GET /api/topics', () => {
     });
   });
 
-  describe('GET /api/articles/:article_id', () => {
-    test('200: serves the correct article object when valid article_id provided', () => {
+//TASK 4
+describe('GET /api/articles/:article_id', () => {
+  test('200: serves the correct article object when valid article_id provided', () => {
       return request(app)
       .get('/api/articles/2')
       .expect(200)
@@ -52,7 +55,7 @@ describe('GET /api/topics', () => {
             expect.objectContaining({
               author: expect.any(String),
               title: expect.any(String),
-              article_id: expect.any(Number),
+              article_id: 2,
               body: expect.any(String),
               topic: expect.any(String),
               created_at: expect.any(String),
@@ -64,9 +67,10 @@ describe('GET /api/topics', () => {
         });
       });
 
-  describe('GET /api/articles', () => {
-    test('200: serves an array of all articles', () => {
-      return request(app)
+//TASK 5
+describe('GET /api/articles', () => {
+  test('200: serves an array of all articles', () => {
+    return request(app)
       .get('/api/articles')
       .expect(200)
       .then(({body}) => {
@@ -92,3 +96,29 @@ describe('GET /api/topics', () => {
         });
       });
     });
+
+//TASK 6
+describe('GET /api/:article_id/comments', () => {
+  test('200: serves an array of all comments for the given article_id', () => {
+    return request(app)
+    .get('/api/articles/3/comments')
+    .expect(200)
+    .then(({body}) => {
+      const { comments } = body;
+      expect(Array.isArray(comments)).toBe(true);
+      expect(comments).toHaveLength(2);
+      comments.forEach((comment) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 3
+          })
+        );
+      });
+      });
+    });
+  });
