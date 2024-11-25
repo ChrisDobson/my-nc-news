@@ -44,3 +44,5 @@ exports.getComments = (req, res, next) => {
     })
     .catch(next);
 };
+
+//TASK 7

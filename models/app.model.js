@@ -36,7 +36,7 @@ exports.selectArticles = () => {
 
 //TASK 6
 exports.selectComments = (article_id) => {
-    const text = `SELECT * FROM comments WHERE article_id = $1;`
+    const text = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`
     const values = [article_id];
     return db.query(text, values).then(({ rows }) => {
         if (rows.length === 0) {
@@ -45,3 +45,5 @@ exports.selectComments = (article_id) => {
         return rows;
     });
 };
+
+//TASK 7
