@@ -10,7 +10,12 @@ exports.selectTopics = () => {
     });
 };
 
-//STILL NEED TO DO TASK 4!
+exports.selectSingleArticle = (article_id) => {
+    const text = `SELECT * FROM articles WHERE article_id = $1;`
+    const values = [article_id];
+    return db.query(text, values).then(({ rows }) => {
+        return rows[0]});
+    };
 
 exports.selectArticles = () => {
     return db.query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
