@@ -12,8 +12,8 @@ exports.selectComments = (article_id) => {
 
 //TASK 7
 exports.addComment = (newComment) => {
-    const {/*PROPERTIES OF COMMENT*/} = newComment;
-    return db.query(`INSERT VALUES INTO SNACKS, THEN RETURN *;`,
+    const { username, body } = newComment;
+    return db.query(`INSERT INTO ;`,
     /*[PROVIDE THE VALUES AS AN ARRAY, TO PREVENT SQL INJECTION]*/)
     .then(({ rows }) => {
         return rows;
