@@ -22,3 +22,6 @@ exports.postComment = (req, res, next) => {
 };
 
 //TASK 8
+exports.deleteComment = (req, res, next) => {
+    
+}
