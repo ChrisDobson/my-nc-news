@@ -75,6 +75,7 @@ describe('GET /api/articles', () => {
       .then(({body}) => {
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
+        //expect(articles).toHaveLength(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -104,33 +105,7 @@ describe('GET /api/:article_id/comments', () => {
     .then(({body}) => {
       const { comments } = body;
       expect(Array.isArray(comments)).toBe(true);
-      comments.forEach((comment) => {
-        expect(comment).toEqual(
-          expect.objectContaining({
-            comment_id: expect.any(Number),
-            votes: expect.any(Number),
-            created_at: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            article_id: 3
-          })
-        );
-      });
-      });
-    });
-  });
-//In above test, I removed the check for array length, because this could change as comments are added or deleted.
-
-  //TASK 7
-  describe('POST /api/:article_id/comments', () => {
-    // EVERYTHING BELOW NEEDS TO CHANGE. Also don't forget endpoints.json!
-  test('201: serves an array of all comments for the given article_id', () => {
-    return request(app)
-    .get('/api/articles/3/comments')
-    .expect(200)
-    .then(({body}) => {
-      const { comments } = body;
-      expect(Array.isArray(comments)).toBe(true);
+      expect(comments).toHaveLength(2);
       comments.forEach((comment) => {
         expect(comment).toEqual(
           expect.objectContaining({

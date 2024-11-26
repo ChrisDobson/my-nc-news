@@ -27,3 +27,17 @@ exports.selectArticles = () => {
             }));
         });
 };
+
+//TASK 6
+exports.selectComments = (article_id) => {
+    const text = `SELECT * FROM comments WHERE article_id = $1;`
+    const values = [article_id];
+    return db.query(text, values).then(({ rows }) => {
+        if (rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "No comments found"});
+        }
+        return rows;
+    });
+};
+
+//TASK 7
