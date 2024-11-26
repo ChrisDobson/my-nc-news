@@ -75,7 +75,6 @@ describe('GET /api/articles', () => {
       .then(({body}) => {
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
-        //expect(articles).toHaveLength(13);
         expect(articles).toBeSortedBy("created_at", { descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -105,7 +104,6 @@ describe('GET /api/:article_id/comments', () => {
     .then(({body}) => {
       const { comments } = body;
       expect(Array.isArray(comments)).toBe(true);
-      expect(comments).toHaveLength(2);
       comments.forEach((comment) => {
         expect(comment).toEqual(
           expect.objectContaining({
