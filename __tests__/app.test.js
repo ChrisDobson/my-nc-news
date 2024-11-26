@@ -213,3 +213,63 @@ describe('POST /api/:article_id/comments', () => {
 });
 
 //TASK 8
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: increments the votes for an article and responds with the updated article", () => {
+    const update = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/2")
+      .send(update)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          author: "icellusedkars",
+          title: "Sony Vaio; or, The Laptop",
+          article_id: 2,
+          body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+          topic: "mitch",
+          created_at: "2020-10-16T05:03:00.000Z",
+          votes: 1,
+          article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      });
+    });
+  });
+  test("200: decrements the votes for an article and responds with the updated article", () => {
+    const update = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(update)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article).toEqual({
+          author: "butter_bridge",
+          title: "Living in the shadow of a great man",
+          article_id: 1,
+          body: "I find this existence challenging",
+          topic: "mitch",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 99,
+          article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      });
+    });
+  });
+  test("400: responds with error for invalid input", () => {
+    const invalidUpdate = { inc_votes: "ten" };
+    return request(app)
+      .patch("/api/articles/3")
+      .send(invalidUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+    });
+  });
+  test("400: responds with error if given no input", () => {
+    const update = {};
+    return request(app)
+      .patch("/api/articles/4")
+      .send(update)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+    });
+  });
+});
