@@ -53,7 +53,7 @@
           "title": "Living in the shadow of a great man",
           "article_id": 1,
           "topic": "mitch",
-          "created_at": "2020-07-09 21:11:00",
+          "created_at": "2020-07-09T21:11:00Z",
           "votes": 100,
           "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           "comment_count": 11
@@ -70,7 +70,7 @@
         {
           "comment_id": 11,
           "votes": 0,
-          "created_at": "2020-09-20 00:10:00",
+          "created_at": "2020-09-20T00:10:00Z",
           "author": "icellusedkars",
           "body": "Ambidextrous marsupial",
           "article_id": 3
@@ -78,7 +78,7 @@
         {
           "comment_id": 10,
           "votes": 0,
-          "created_at": "2020-06-20 08:24:00",
+          "created_at": "2020-06-20T08:24:00Z",
           "author": "icellusedkars",
           "body": "git push origin master",
           "article_id": 3
@@ -88,27 +88,17 @@
   },
 
   "POST /api/articles/:article_id/comments": {
-    "description": "200: serves an array of all comments for the given article_id",
+    "description": "201: adds a comment to the given article_id",
     "queries": [],
     "exampleResponse": {
-      "comments": [
-        {
-          "comment_id": 11,
-          "votes": 0,
-          "created_at": "2020-09-20 00:10:00",
-          "author": "icellusedkars",
-          "body": "Ambidextrous marsupial",
-          "article_id": 3
-        },
-        {
+      "comments": {
           "comment_id": 10,
           "votes": 0,
           "created_at": "2020-06-20 08:24:00",
-          "author": "icellusedkars",
-          "body": "git push origin master",
-          "article_id": 3
+          "author": "butter_bridge",
+          "body": "This is a good article name",
+          "article_id": 6
         }
-      ]
     }
   }
 }

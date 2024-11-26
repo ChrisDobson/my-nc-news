@@ -50,8 +50,7 @@ describe('GET /api/articles/:article_id', () => {
       .get('/api/articles/2')
       .expect(200)
       .then(({ body }) => {
-          expect(body.article).toEqual(
-            expect.objectContaining({
+          expect(body.article).toEqual({
               author: "icellusedkars",
               title: "Sony Vaio; or, The Laptop",
               article_id: 2,
@@ -60,7 +59,7 @@ describe('GET /api/articles/:article_id', () => {
               created_at: "2020-10-16T05:03:00.000Z",
               votes: 0,
               article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-            })
+          }
           );
         });
         });
@@ -69,7 +68,7 @@ describe('GET /api/articles/:article_id', () => {
         .get("/api/articles/not-an-id")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toEqual("Bad request");
+          expect(msg).toBe("Bad request: Invalid input");
         });
     });
   test("404: responds with error message if passed a valid article ID that does not exist in the database", () => {
@@ -77,7 +76,7 @@ describe('GET /api/articles/:article_id', () => {
         .get("/api/articles/9999")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).toEqual("Article ID not found");
+          expect(msg).toBe("Article ID not found");
         });
     }); 
       });
@@ -139,7 +138,7 @@ describe('GET /api/:article_id/comments', () => {
     .get('/api/articles/2/comments')
     .expect(404)
     .then(({ body: { msg } }) => {
-      expect(msg).toEqual("No comments found");
+      expect(msg).toBe("No comments found");
     });
   });
   test("404: responds with error message if passed a valid article ID that does not exist in the database", () => {
@@ -147,7 +146,7 @@ describe('GET /api/:article_id/comments', () => {
     .get('/api/articles/9999/comments')
     .expect(404)
     .then(({ body: { msg } }) => {
-      expect(msg).toEqual("No comments found");
+      expect(msg).toBe("No comments found");
     });
   });
   test("400: responds with 'Bad request' if passed an invalid article ID", () => {
@@ -155,32 +154,62 @@ describe('GET /api/:article_id/comments', () => {
       .get("/api/articles/not-an-id/comments")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toEqual("Bad request");
+        expect(msg).toBe("Bad request: Invalid input");
       });
   });
 });
 
   //TASK 7
-describe.skip('POST /api/:article_id/comments', () => {
-  test('201: adds a comment to the given article_id', () => {
+describe('POST /api/:article_id/comments', () => {
+  test('201: responds with the posted comment', () => {
+    const newComment = { username: "butter_bridge", body: "This is a good article name"};
     return request(app)
-    .get('/api/articles/2/comments')
+    .post('/api/articles/2/comments')
+    .send(newComment)
     .expect(201)
-    .then(({body}) => {
-      const { comments } = body;
-      expect(Array.isArray(comments)).toBe(true);
-      comments.forEach((comment) => {
-        expect(comment).toEqual(
-          expect.objectContaining({
-            comment_id: expect.any(Number),
-            votes: expect.any(Number),
-            created_at: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            article_id: 3
-          })
-        );
-      });
-      });
+    .then(({ body }) => {
+      expect(body.comment).toEqual(
+        expect.objectContaining({
+          "comment_id": expect.any(Number),
+          "votes": 0,
+          "created_at": expect.any(String),
+          "author": "butter_bridge",
+          "body": "This is a good article name",
+          "article_id": 2
+        })
+      );
+    });
+    });
+  test('400: responds with error message if body or username not provided', () => {
+    const invalidComment = { body: "Missing username"};
+    return request(app)
+    .post('/api/articles/2/comments')
+    .send(invalidComment)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request: Missing required fields");
     });
   });
+  test('400: responds with error message if article_id is invalid', () => {
+    const newComment = { username: "butter_bridge", body: "This is a good article name"};
+    return request(app)
+    .post('/api/articles/not-a-number/comments')
+    .send(newComment)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request: Invalid input");
+    });
+  });
+  test('404: responds with error message if article_id does not exist', () => {
+    const newComment = { username: "butter_bridge", body: "This is a good article name"};
+    return request(app)
+    .post('/api/articles/9999/comments')
+    .send(newComment)
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Article or user not found");
+    });
+  });
+});
+
+//TASK 8
