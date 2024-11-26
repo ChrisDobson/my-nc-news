@@ -273,3 +273,15 @@ describe("PATCH /api/articles/:article_id", () => {
     });
   });
 });
+
+//TASK 9
+describe("DELETE /api", () => {
+  test("200: serves up a json representation of all the available endpoints of the api", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body: { endpoints } }) => {
+        expect(endpoints).toEqual(endpointsJson);
+      });
+  });
+});
