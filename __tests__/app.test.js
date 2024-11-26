@@ -117,7 +117,7 @@ describe('GET /api/:article_id/comments', () => {
     return request(app)
     .get('/api/articles/3/comments')
     .expect(200)
-    .then(({body}) => {
+    .then(({ body }) => {
       const { comments } = body;
       expect(Array.isArray(comments)).toBe(true);
       comments.forEach((comment) => {
@@ -134,14 +134,38 @@ describe('GET /api/:article_id/comments', () => {
       });
       });
     });
+    test("404: responds with error message if passed a valid article ID that does not have any comments", () => {
+      return request(app)
+    .get('/api/articles/2/comments')
+    .expect(404)
+    .then(({ body: { msg } }) => {
+      expect(msg).toEqual("No comments found");
+    });
   });
+  test("404: responds with error message if passed a valid article ID that does not exist in the database", () => {
+    return request(app)
+    .get('/api/articles/9999/comments')
+    .expect(404)
+    .then(({ body: { msg } }) => {
+      expect(msg).toEqual("No comments found");
+    });
+  });
+  test("400: responds with 'Bad request' if passed an invalid article ID", () => {
+    return request(app)
+      .get("/api/articles/not-an-id/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Bad request");
+      });
+  });
+});
 
   //TASK 7
-describe('POST /api/:article_id/comments', () => {
-  test('200: serves an array of all comments for the given article_id', () => {
+describe.skip('POST /api/:article_id/comments', () => {
+  test('201: adds a comment to the given article_id', () => {
     return request(app)
-    .get('/api/articles/3/comments')
-    .expect(200)
+    .get('/api/articles/2/comments')
+    .expect(201)
     .then(({body}) => {
       const { comments } = body;
       expect(Array.isArray(comments)).toBe(true);
