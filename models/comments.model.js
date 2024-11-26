@@ -11,14 +11,21 @@ exports.selectComments = (article_id) => {
 };
 
 //TASK 7
-exports.addComment = (newComment) => {
+exports.addComment = (article_id, newComment) => {
     const { username, body } = newComment;
+    if (!username || !body) {
+        return Promise.reject({ status: 400, msg: "Bad request: Missing required fields"});
+    }
     return db.query(`
-        INSERT INTO comments (username, body)
-        VALUES ($1, $2) RETURNING *;`,
-        [username, body]
+        INSERT INTO comments (author, body, article_id)
+        VALUES ($1, $2, $3) RETURNING *;`, [username, body, article_id]
     )
     .then(({ rows }) => {
-        return rows;
+        if (rows.length === 0) {
+            return Promise.reject({ status: 404, msg: "Article not found"});
+        }
+        return rows[0];
     });
 };
+
+//TASK 8

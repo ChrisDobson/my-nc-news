@@ -12,9 +12,13 @@ exports.getComments = (req, res, next) => {
 
 //TASK 7
 exports.postComment = (req, res, next) => {
+    const { article_id } = req.params;
     const newComment = req.body;
-    addComment(newComment).then(() => {
-        res.status(201).send({ newComment });
+    addComment(article_id, newComment)
+    .then((comment) => {
+        res.status(201).send({ comment });
     })
     .catch(next);
 };
+
+//TASK 8
