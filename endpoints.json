@@ -121,5 +121,11 @@
         }
       ]
     }
+  },
+
+  "DELETE /api/comments/:comment_id": {
+    "description": "204: successfully deletes a comment by comment_id",
+    "queries": [],
+    "exampleResponse": "No content"
   }
 }

@@ -1,4 +1,4 @@
-const { selectComments, addComment } = require("../models/comments.model");
+const { selectComments, addComment, removeComment } = require("../models/comments.model");
 
 //TASK 6
 exports.getComments = (req, res, next) => {
@@ -23,5 +23,10 @@ exports.postComment = (req, res, next) => {
 
 //TASK 8
 exports.deleteComment = (req, res, next) => {
-    
-}
+    const { comment_id } = req.params;
+    removeComment(comment_id)
+    .then(() => {
+        res.status(204).send();
+    })
+    .catch(next);
+};
