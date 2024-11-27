@@ -275,13 +275,32 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 
 //TASK 9
-describe("DELETE /api", () => {
-  test("200: serves up a json representation of all the available endpoints of the api", () => {
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: successfully deletes a comment by comment_id", () => {
     return request(app)
-      .get("/api")
-      .expect(200)
-      .then(({ body: { endpoints } }) => {
-        expect(endpoints).toEqual(endpointsJson);
+      .delete("/api/comments/18")
+      .expect(204)
+      .then(() => {
+        return db.query("SELECT * FROM comments WHERE comment_id = 18;")
+        .then(({ rows }) => {
+          expect(rows.length).toBe(0);
+        });
       });
   });
-});
+  test("404: responds with error if comment_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+          expect(body.msg).toBe("Comment not found");
+        });
+      });
+  test("400: responds with error if given invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/not-an-id")
+      .expect(400)
+      .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: Invalid input");
+        });
+      });
+  });
