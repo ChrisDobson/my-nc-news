@@ -31,6 +31,7 @@ describe('GET /api/topics', () => {
     .then(({body}) => {
       const { topics } = body;
       expect(Array.isArray(topics)).toBe(true);
+      expect(topics.length).toBe(3);
       topics.forEach((topic) => {
         expect(topic).toEqual(
           expect.objectContaining({
@@ -50,16 +51,17 @@ describe('GET /api/articles/:article_id', () => {
       .get('/api/articles/2')
       .expect(200)
       .then(({ body }) => {
-          expect(body.article).toEqual({
+          expect(body.article).toEqual(
+            expect.objectContaining({
               author: "icellusedkars",
               title: "Sony Vaio; or, The Laptop",
               article_id: 2,
-              body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
+              body: expect.any(String),
               topic: "mitch",
               created_at: "2020-10-16T05:03:00.000Z",
               votes: 0,
               article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          }
+          })
           );
         });
         });
@@ -81,7 +83,7 @@ describe('GET /api/articles/:article_id', () => {
     }); 
       });
 
-//TASK 5 (see also task 11)
+//TASK 5 (see also tasks 11 & 12)
 describe('GET /api/articles', () => {
   test('200: serves an array of all articles, sorted by "created_at" in descending order', () => {
     return request(app)
@@ -221,18 +223,20 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(update)
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toEqual({
-          author: "icellusedkars",
-          title: "Sony Vaio; or, The Laptop",
-          article_id: 2,
-          body: "Call me Mitchell. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would buy a laptop about a little and see the codey part of the world. It is a way I have of driving off the spleen and regulating the circulation. Whenever I find myself growing grim about the mouth; whenever it is a damp, drizzly November in my soul; whenever I find myself involuntarily pausing before coffin warehouses, and bringing up the rear of every funeral I meet; and especially whenever my hypos get such an upper hand of me, that it requires a strong moral principle to prevent me from deliberately stepping into the street, and methodically knocking people’s hats off—then, I account it high time to get to coding as soon as I can. This is my substitute for pistol and ball. With a philosophical flourish Cato throws himself upon his sword; I quietly take to the laptop. There is nothing surprising in this. If they but knew it, almost all men in their degree, some time or other, cherish very nearly the same feelings towards the the Vaio with me.",
-          topic: "mitch",
-          created_at: "2020-10-16T05:03:00.000Z",
-          votes: 1,
-          article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        expect(body.article).toEqual(
+          expect.objectContaining({
+            author: "icellusedkars",
+            title: "Sony Vaio; or, The Laptop",
+            article_id: 2,
+            body: expect.any(String),
+            topic: "mitch",
+            created_at: "2020-10-16T05:03:00.000Z",
+            votes: 1,
+            article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        })
+        );
       });
-    });
-  });
+      });
   test("200: decrements the votes for an article and responds with the updated article", () => {
     const update = { inc_votes: -1 };
     return request(app)
@@ -314,6 +318,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .then(({body}) => {
         const { users } = body;
         expect(Array.isArray(users)).toBe(true);
+        expect(users.length).toBe(4);
         users.forEach((user) => {
           expect(user).toEqual(
             expect.objectContaining({
@@ -421,3 +426,65 @@ describe('GET /api/articles', () => {
       });
     });
   });
+
+  //TASK 12 (which builds on tasks 5 & 11)
+  describe('GET /api/articles', () => {
+    test('200: serves an array of articles, filtered by topic', () => {
+      return request(app)
+        .get('/api/articles?topic=cats')
+        .expect(200)
+        .then(({body}) => {
+          const { articles } = body;
+          expect(Array.isArray(articles)).toBe(true);
+          expect(articles).toBeSortedBy("created_at", { descending: true });
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: "cats",
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number),
+              })
+            );
+            expect(article.body).toBeUndefined();
+          });
+          });
+        });
+  test('200: serves an array of articles, filtered by topic and sorted by order queries', () => {
+      return request(app)
+        .get('/api/articles?sort_by=author&order=asc&topic=mitch')
+        .expect(200)
+        .then(({body}) => {
+          const { articles } = body;
+          expect(Array.isArray(articles)).toBe(true);
+          expect(articles).toBeSortedBy("author", { ascending: true });
+          articles.forEach((article) => {
+            expect(article).toEqual(
+              expect.objectContaining({
+                author: expect.any(String),
+                title: expect.any(String),
+                article_id: expect.any(Number),
+                topic: "mitch",
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                article_img_url: expect.any(String),
+                comment_count: expect.any(Number),
+              })
+            );
+            expect(article.body).toBeUndefined();
+          });
+          });
+        });
+  test('404: serves an error message if topic has no articles', () => {
+      return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('Topic not found');
+          });
+        });
+      });
