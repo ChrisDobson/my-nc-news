@@ -44,7 +44,7 @@ describe('GET /api/topics', () => {
     });
   });
 
-//TASK 4
+//TASK 4 (see also task 13)
 describe('GET /api/articles/:article_id', () => {
   test('200: serves the correct article object when valid article_id provided', () => {
       return request(app)
@@ -244,7 +244,8 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(update)
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toEqual({
+        expect(body.article).toEqual(
+          expect.objectContaining({
           author: "butter_bridge",
           title: "Living in the shadow of a great man",
           article_id: 1,
@@ -253,9 +254,10 @@ describe("PATCH /api/articles/:article_id", () => {
           created_at: "2020-07-09T20:11:00.000Z",
           votes: 99,
           article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-      });
-    });
+      })
+    )
   });
+});
   test("400: responds with error for invalid input", () => {
     const invalidUpdate = { inc_votes: "ten" };
     return request(app)
@@ -486,5 +488,29 @@ describe('GET /api/articles', () => {
         .then(({body}) => {
             expect(body.msg).toBe('Topic not found');
           });
+        });
+      });
+
+//TASK 13 (which builds on task 4)
+describe('GET /api/articles/:article_id', () => {
+  test('200: serves the correct article object, now including comment_count', () => {
+      return request(app)
+      .get('/api/articles/3')
+      .expect(200)
+      .then(({ body }) => {
+          expect(body.article).toEqual(
+            expect.objectContaining({
+              author: "icellusedkars",
+              title: "Eight pug gifs that remind me of mitch",
+              article_id: 3,
+              body: "some gifs",
+              topic: "mitch",
+              created_at: "2020-11-03T09:12:00.000Z",
+              votes: 0,
+              article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              comment_count: 2
+            })
+          );
+        });
         });
       });
