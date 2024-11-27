@@ -67,8 +67,8 @@ describe('GET /api/articles/:article_id', () => {
       return request(app)
         .get("/api/articles/not-an-id")
         .expect(400)
-        .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request: Invalid input");
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: Invalid input");
         });
     });
   test("404: responds with error message if passed a valid article ID that does not exist in the database", () => {
@@ -81,9 +81,9 @@ describe('GET /api/articles/:article_id', () => {
     }); 
       });
 
-//TASK 5
+//TASK 5 (see also task 11)
 describe('GET /api/articles', () => {
-  test('200: serves an array of all articles', () => {
+  test('200: serves an array of all articles, sorted by "created_at" in descending order', () => {
     return request(app)
       .get('/api/articles')
       .expect(200)
@@ -153,8 +153,8 @@ describe('GET /api/:article_id/comments', () => {
     return request(app)
       .get("/api/articles/not-an-id/comments")
       .expect(400)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: Invalid input");
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request: Invalid input");
       });
   });
 });
@@ -326,3 +326,98 @@ describe("DELETE /api/comments/:comment_id", () => {
         });
       });
     });
+
+//TASK 11 (which builds on task 5)
+describe('GET /api/articles', () => {
+  test('200: sorts articles by a valid column in ascending order', () => {
+    return request(app)
+      .get('/api/articles?sort_by=title&order=asc')
+      .expect(200)
+      .then(({body}) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("title", { ascending: true });
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+          expect(article.body).toBeUndefined();
+        });
+        });
+      });
+  test('200: if only a sort_by column is provided, default order is descending', () => {
+    return request(app)
+      .get('/api/articles?sort_by=votes')
+      .expect(200)
+      .then(({body}) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("votes", { descending: true });
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+          expect(article.body).toBeUndefined();
+        });
+        });
+      });
+  test('200: if only an order value is provided, default sort_by is created_at', () => {
+    return request(app)
+      .get('/api/articles?order=asc')
+      .expect(200)
+      .then(({body}) => {
+        const { articles } = body;
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+          expect(article.body).toBeUndefined();
+        });
+        });
+      });
+  test('400: serves error message if sort_by column is invalid', () => {
+    return request(app)
+      .get('/api/articles?sort_by=not_a_column')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid sort_by column");
+      });
+    });
+  test('400: serves error message if order value is invalid', () => {
+    return request(app)
+      .get('/api/articles?order=invalid')
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid order value");
+      });
+    });
+  });
