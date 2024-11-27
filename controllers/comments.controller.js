@@ -21,7 +21,7 @@ exports.postComment = (req, res, next) => {
     .catch(next);
 };
 
-//TASK 8
+//TASK 9
 exports.deleteComment = (req, res, next) => {
     const { comment_id } = req.params;
     removeComment(comment_id)
