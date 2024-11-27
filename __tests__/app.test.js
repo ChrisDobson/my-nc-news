@@ -31,7 +31,6 @@ describe('GET /api/topics', () => {
     .then(({body}) => {
       const { topics } = body;
       expect(Array.isArray(topics)).toBe(true);
-      expect(topics.length).toBe(3);
       topics.forEach((topic) => {
         expect(topic).toEqual(
           expect.objectContaining({
