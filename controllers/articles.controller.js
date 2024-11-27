@@ -1,6 +1,6 @@
 const { selectSingleArticle, selectArticles, updateArticle } = require("../models/articles.model");
 
-//TASK 4
+//TASKS 4, 13
 exports.getSingleArticle = (req, res, next) => {
     const { article_id } = req.params;
     selectSingleArticle(article_id)
@@ -10,10 +10,10 @@ exports.getSingleArticle = (req, res, next) => {
     .catch(next);
 };
 
-//TASK 5
+//TASKS 5, 11, 12
 exports.getArticles = (req, res, next) => {
-    const { sort_by = 'created_at', order = 'desc' } = req.query
-    selectArticles(sort_by, order)
+    const { sort_by = 'created_at', order = 'desc', topic } = req.query
+    selectArticles(sort_by, order, topic)
     .then((articles) => {
         res.status(200).send({ articles });
     })
