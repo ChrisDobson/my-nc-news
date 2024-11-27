@@ -28,7 +28,7 @@ exports.addComment = (article_id, newComment) => {
     });
 };
 
-//TASK 8
+//TASK 9
 exports.removeComment = (comment_id) => {
     return db.query(`
         DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [comment_id])

@@ -8,19 +8,18 @@ const { handlePSQLErrors, handleCustomErrors, handleServerErrors } = require("./
 
 app.use(express.json())
 
-//TASKS 2-6, 10-13
-app.get("/api", getApi);
-app.get("/api/topics", getTopics);
-app.get("/api/articles/:article_id", getSingleArticle);
-app.get("/api/articles", getArticles);
-app.get("/api/articles/:article_id/comments", getComments);
-app.get("/api/users", getUsers);
-//TASK 7
-app.post("/api/articles/:article_id/comments", postComment);
-//TASK 8
-app.patch("/api/articles/:article_id", patchArticle);
-//TASK 9
-app.delete("/api/comments/:comment_id", deleteComment);
+app.get("/api", getApi); //TASK 2
+app.get("/api/topics", getTopics); //TASK 3
+app.get("/api/articles/:article_id", getSingleArticle); //TASKS 4, 13
+app.get("/api/articles", getArticles); //TASKS 5, 11, 12
+app.get("/api/articles/:article_id/comments", getComments); //TASK 6
+app.get("/api/users", getUsers); //TASK 10
+
+app.post("/api/articles/:article_id/comments", postComment); //TASK 7
+
+app.patch("/api/articles/:article_id", patchArticle); //TASK 8
+
+app.delete("/api/comments/:comment_id", deleteComment); //TASK 9
 
 app.all('/*', (req, res) => {
     res.status(404).send({ msg: 'Endpoint not found' });
