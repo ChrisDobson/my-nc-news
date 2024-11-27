@@ -3,7 +3,7 @@ const app = express();
 const { getApi, getTopics } = require("./controllers/topics.controller");
 const { getSingleArticle, getArticles, patchArticle } = require("./controllers/articles.controller");
 const { getComments, postComment, deleteComment } = require("./controllers/comments.controller");
-//For task 10: Require in users.controller!
+const { getUsers } = require("./controllers/users.controller");
 const { handlePSQLErrors, handleCustomErrors, handleServerErrors } = require("./controllers/errors.controller");
 
 app.use(express.json())
@@ -14,6 +14,7 @@ app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getSingleArticle);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getComments);
+app.get("/api/users", getUsers);
 //TASK 7
 app.post("/api/articles/:article_id/comments", postComment);
 //TASK 8
