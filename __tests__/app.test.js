@@ -366,7 +366,6 @@ describe('GET /api/articles', () => {
       .expect(200)
       .then(({body}) => {
         const { articles } = body;
-        expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("votes", { descending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -391,7 +390,6 @@ describe('GET /api/articles', () => {
       .expect(200)
       .then(({body}) => {
         const { articles } = body;
-        expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("created_at", { ascending: true });
         articles.forEach((article) => {
           expect(article).toEqual(
@@ -512,4 +510,30 @@ describe('GET /api/articles/:article_id', () => {
           );
         });
         });
+      });
+
+//TASK 17
+describe('GET /api/users/:username', () => {
+  test('200: serves the correct user object when valid username provided', () => {
+      return request(app)
+      .get('/api/users/rogersop')
+      .expect(200)
+      .then(({ body }) => {
+          expect(body.user).toEqual(
+            expect.objectContaining({
+              username: "rogersop",
+              name: "paul",
+              avatar_url: "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4"
+          })
+          );
+        });
+        });
+  test("404: responds with error message if passed a username that does not exist in the database", () => {
+      return request(app)
+        .get("/api/users/not-a-username")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Username not found");
+        });
+    }); 
       });
