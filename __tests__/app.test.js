@@ -161,7 +161,7 @@ describe('GET /api/:article_id/comments', () => {
 });
 
   //TASK 7
-describe('POST /api/:article_id/comments', () => {
+describe('POST /api/articles/:article_id/comments', () => {
   test('201: responds with the posted comment', () => {
     const newComment = { username: "butter_bridge", body: "This is a good article name"};
     return request(app)
