@@ -679,3 +679,53 @@ describe('POST /api/articles', () => {
     });
   });
 });
+
+//TASK 22
+describe('POST /api/topics', () => {
+  test('201: adds to topics array and responds with new topic', () => {
+    const newTopic = { slug: "cooking", description: "Hey good looking, what you got cooking?" }
+    return request(app)
+    .post('/api/topics')
+    .send(newTopic)
+    .expect(201)
+    .then(({ body }) => {
+      expect(body.topic).toEqual({
+          slug: "cooking",
+          description: "Hey good looking, what you got cooking?",
+        });
+      });
+    });
+  test('201: if no valid description is provided, its value is set to null', () => {
+    const newTopic = { slug: "coding" }
+    return request(app)
+    .post('/api/topics')
+    .send(newTopic)
+    .expect(201)
+    .then(({ body }) => {
+      expect(body.topic).toEqual({
+          slug: "coding",
+          description: null
+        });
+      });
+    });
+  test('400: responds with error message if slug already exists', () => {
+    const invalidTopic = { slug: "paper", description: "what books are made of"};
+    return request(app)
+    .post('/api/topics')
+    .send(invalidTopic)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request: Topic already exists");
+    });
+  });
+  test('400: responds with error message if slug is missing or invalid', () => {
+    const invalidTopic = { description: "not a slug" };
+    return request(app)
+    .post('/api/topics')
+    .send(invalidTopic)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request: Invalid or missing slug");
+    });
+  });
+});

@@ -16,12 +16,19 @@
         {
         "slug": "football",
         "description": "FOOTIE!"
-        },
-        {
+        }
+        ]
+}
+  },
+
+  "POST /api/topics": {
+    "description": "201: adds to topics array and responds with new topic",
+    "queries": [],
+    "exampleResponse": {
+      "topic": {
         "slug": "cooking",
         "description": "Hey good looking, what you got cooking?"
         }
-        ]
 }
   },
 
