@@ -23,7 +23,7 @@ exports.getArticles = (req, res, next) => {
 //TASK 8
 exports.patchArticle = (req, res, next) => {
     const { article_id } = req.params;
-    const { inc_votes } =req.body;
+    const { inc_votes } = req.body;
     updateArticle(article_id, inc_votes)
     .then((updatedArticle) => {
         res.status(200).send({ article: updatedArticle });
