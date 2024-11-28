@@ -1,4 +1,4 @@
-const { selectArticles, addArticle, selectSingleArticle, updateArticle } = require("../models/articles.model");
+const { selectArticles, addArticle, selectSingleArticle, updateArticle, removeArticle } = require("../models/articles.model");
 
 //TASKS 5, 11, 12
 exports.getArticles = (req, res, next) => {
@@ -37,6 +37,16 @@ exports.patchArticle = (req, res, next) => {
     updateArticle(article_id, inc_votes)
     .then((updatedArticle) => {
         res.status(200).send({ article: updatedArticle });
+    })
+    .catch(next);
+};
+
+//TASK 23
+exports.deleteArticle = (req, res, next) => {
+    const { article_id } = req.params;
+    removeArticle(article_id)
+    .then(() => {
+        res.status(204).send();
     })
     .catch(next);
 };

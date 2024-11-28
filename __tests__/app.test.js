@@ -680,6 +680,9 @@ describe('POST /api/articles', () => {
   });
 });
 
+//TASK 20
+//TASK 21
+
 //TASK 22
 describe('POST /api/topics', () => {
   test('201: adds to topics array and responds with new topic', () => {
@@ -729,3 +732,34 @@ describe('POST /api/topics', () => {
     });
   });
 });
+
+//TASK 23
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: successfully deletes an article by article_id, including any associated comments", () => {
+    return request(app)
+      .delete("/api/articles/1")
+      .expect(204)
+      .then(() => {
+        return db.query("SELECT * FROM comments WHERE article_id = 1;")
+        .then(({ rows }) => {
+          expect(rows.length).toBe(0);
+        });
+      });
+  });
+  test("404: responds with error if article_id does not exist", () => {
+    return request(app)
+      .delete("/api/articles/9999")
+      .expect(404)
+      .then(({ body }) => {
+          expect(body.msg).toBe("Article not found");
+        });
+      });
+  test("400: responds with error if given invalid article_id", () => {
+    return request(app)
+      .delete("/api/comments/not-an-id")
+      .expect(400)
+      .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: Invalid input");
+        });
+      });
+  });

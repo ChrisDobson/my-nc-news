@@ -136,6 +136,12 @@
     }
   },
 
+  "DELETE /api/articles/:article_id": {
+    "description": "204: successfully deletes an article by article_id, including any associated comments",
+    "queries": [],
+    "exampleResponse": "No Content"
+  },
+
   "GET /api/articles/:article_id/comments": {
     "description": "200: serves an array of all comments for the given article_id",
     "queries": [],
@@ -171,7 +177,7 @@
   "DELETE /api/comments/:comment_id": {
     "description": "204: successfully deletes a comment by comment_id",
     "queries": [],
-    "exampleResponse": "No content"
+    "exampleResponse": "No Content"
   },
 
   "PATCH /api/comments/:comment_id": {
