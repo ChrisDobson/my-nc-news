@@ -537,3 +537,67 @@ describe('GET /api/users/:username', () => {
         });
     }); 
       });
+
+//TASK 18
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: increments the votes for a comment and responds with the updated comment", () => {
+    const update = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(update)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual(
+          expect.objectContaining({
+          "comment_id": 2,
+          "votes": 15,
+          "created_at": "2020-10-31T03:03:00.000Z",
+          "author": "butter_bridge",
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          "article_id": 1
+        })
+        );
+      });
+      });
+  test("200: decrements the votes for a comment and responds with the updated comment", () => {
+    const update = { inc_votes: -1 };
+    return request(app)
+      .patch("/api/comments/3")
+      .send(update)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comment).toEqual(
+          expect.objectContaining({
+          "comment_id": 3,
+          "votes": 99,
+          "created_at": "2020-03-01T01:13:00.000Z",
+          "author": "icellusedkars",
+          "body": "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+          "article_id": 1
+      })
+    )
+  });
+});
+  test("400: responds with error for invalid input", () => {
+    const invalidUpdate = { inc_votes: "ten" };
+    return request(app)
+      .patch("/api/comments/3")
+      .send(invalidUpdate)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+    });
+  });
+  test("400: responds with error if given no input", () => {
+    const update = {};
+    return request(app)
+      .patch("/api/comments/3")
+      .send(update)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+    });
+  });
+});
+
+//TASK 19
