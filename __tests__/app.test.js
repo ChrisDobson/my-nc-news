@@ -163,7 +163,7 @@ describe('GET /api/:article_id/comments', () => {
   //TASK 7
 describe('POST /api/articles/:article_id/comments', () => {
   test('201: responds with the posted comment', () => {
-    const newComment = { username: "butter_bridge", body: "This is a good article name"};
+    const newComment = { username: "butter_bridge", body: "New comment"};
     return request(app)
     .post('/api/articles/2/comments')
     .send(newComment)
@@ -172,11 +172,11 @@ describe('POST /api/articles/:article_id/comments', () => {
       expect(body.comment).toEqual(
         expect.objectContaining({
           "comment_id": expect.any(Number),
+          "body": "New comment",
+          "article_id": 2,
+          "author": "butter_bridge",
           "votes": 0,
           "created_at": expect.any(String),
-          "author": "butter_bridge",
-          "body": "This is a good article name",
-          "article_id": 2
         })
       );
     });
@@ -478,9 +478,9 @@ describe('GET /api/articles', () => {
           });
           });
         });
-  test('404: serves an error message if topic has no articles', () => {
+  test('404: serves an error message if topic does not exist', () => {
       return request(app)
-        .get('/api/articles?topic=paper')
+        .get('/api/articles?topic=banana')
         .expect(404)
         .then(({body}) => {
             expect(body.msg).toBe('Topic not found');
@@ -601,3 +601,81 @@ describe("PATCH /api/comments/:comment_id", () => {
 });
 
 //TASK 19
+describe('POST /api/articles', () => {
+  test('201: responds with the posted article and a custom article_img_url', () => {
+    const newArticle = { author: "lurker", title: "Another article", body: "This is another article.", topic: "paper", article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"};
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(({ body }) => {
+      expect(body.article).toEqual(
+        expect.objectContaining({
+          "author": "lurker",
+          "title": "Another article",
+          "article_id": expect.any(Number),
+          "body": "This is another article.",
+          "topic": "paper",
+          "created_at": expect.any(String),
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          "comment_count": 0
+        })
+      );
+    });
+    });
+  test('201: responds with the posted article and a default article_img_url, if none provided', () => {
+    const newArticle = { author: "lurker", title: "New article", body: "This is a new article!", topic: "paper"};
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(({ body }) => {
+      expect(body.article).toEqual(
+        expect.objectContaining({
+          "author": "lurker",
+          "title": "New article",
+          "article_id": expect.any(Number),
+          "body": "This is a new article!",
+          "topic": "paper",
+          "created_at": expect.any(String),
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          "comment_count": 0
+        })
+      );
+    });
+    });
+  test('201: responds with the posted article and a default article_img_url, if provided url is invalid', () => {
+    const newArticle = { author: "lurker", title: "New article", body: "This is a new article!", topic: "paper", article_img_url: ""};
+    return request(app)
+    .post('/api/articles')
+    .send(newArticle)
+    .expect(201)
+    .then(({ body }) => {
+      expect(body.article).toEqual(
+        expect.objectContaining({
+          "author": "lurker",
+          "title": "New article",
+          "article_id": expect.any(Number),
+          "body": "This is a new article!",
+          "topic": "paper",
+          "created_at": expect.any(String),
+          "votes": 0,
+          "article_img_url": "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          "comment_count": 0
+        })
+      );
+    });
+    });
+  test('400: responds with error message if request body is incomplete', () => {
+    const invalidArticle = { title: "New article", body: "This is a new article!", topic: "paper"};
+    return request(app)
+    .post('/api/articles')
+    .send(invalidArticle)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request: Missing required fields");
+    });
+  });
+});

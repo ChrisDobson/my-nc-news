@@ -1,14 +1,4 @@
-const { selectSingleArticle, selectArticles, updateArticle } = require("../models/articles.model");
-
-//TASKS 4, 13
-exports.getSingleArticle = (req, res, next) => {
-    const { article_id } = req.params;
-    selectSingleArticle(article_id)
-    .then((article) => {
-        res.status(200).send({ article });
-    })
-    .catch(next);
-};
+const { selectArticles, addArticle, selectSingleArticle, updateArticle } = require("../models/articles.model");
 
 //TASKS 5, 11, 12
 exports.getArticles = (req, res, next) => {
@@ -16,6 +6,26 @@ exports.getArticles = (req, res, next) => {
     selectArticles(sort_by, order, topic)
     .then((articles) => {
         res.status(200).send({ articles });
+    })
+    .catch(next);
+};
+
+//TASK 19
+exports.postArticle = (req, res, next) => {
+    const newArticle = req.body;
+    addArticle(newArticle)
+    .then((article) => {
+        res.status(201).send({ article });
+    })
+    .catch(next);
+};
+
+//TASKS 4, 13
+exports.getSingleArticle = (req, res, next) => {
+    const { article_id } = req.params;
+    selectSingleArticle(article_id)
+    .then((article) => {
+        res.status(200).send({ article });
     })
     .catch(next);
 };
