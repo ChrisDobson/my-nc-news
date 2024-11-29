@@ -5,7 +5,7 @@
   },
 
   "GET /api/topics": {
-    "description": "200: serves an array of all topics",
+    "description": "200: serves up an array of all topics",
     "queries": {},
     "exampleResponse": {
       "topics": [
@@ -33,7 +33,7 @@
   },
 
   "GET /api/articles": {
-    "description": "200: serves an array of all articles, sorted by 'created_at' in descending order",
+    "description": "200: serves up an array of all articles, sorted by 'created_at' in descending order",
     "queries": {
       "sort_by": "column to sort by, defaults to created_at",
       "order": "sort order, default to desc",
@@ -107,7 +107,7 @@
   },
 
   "GET /api/articles/:article_id": {
-    "description": "200: serves the correct article object when valid article_id provided",
+    "description": "200: serves up the correct article object when valid article_id provided",
     "queries": {},
     "exampleResponse": {
       "article": {
@@ -150,7 +150,7 @@
   },
 
   "GET /api/articles/:article_id/comments": {
-    "description": "200: serves an array of all comments for the given article_id",
+    "description": "200: serves up an array of all comments for the given article_id",
     "queries": {
       "limit":"number of articles per page, defaults to 10",
       "p":"page number, defaults to 1"
@@ -207,7 +207,7 @@
   },
 
   "GET /api/users": {
-    "description": "200: serves an array of all users",
+    "description": "200: serves up an array of all users",
     "queries": {},
     "exampleResponse": {
       "users": [
@@ -246,7 +246,7 @@
   },
 
   "GET /api/users/:username": {
-    "description": "200: serves the correct user object when valid username provided",
+    "description": "200: serves up the correct user object when valid username provided",
     "queries": {},
     "exampleResponse": {
       "user": {
