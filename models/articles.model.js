@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
-//TASKS 5, 11, 12
-exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
+//TASKS 5, 11, 12, 20
+exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic, limit = 10, p = 1) => {
     const validColumns = ['author', 'title', 'article_id', 'created_at', 'votes'];
     const validOrders = ['asc', 'desc'];
     if (!validColumns.includes(sort_by)) {
@@ -10,26 +10,35 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic) => {
     if (!validOrders.includes(order)) {
         return Promise.reject({ status: 400, msg: "Invalid order value"});
     }
+    if (isNaN(limit) || limit <= 0 || isNaN(p) || p <= 0) {
+        return Promise.reject({ status: 400, msg: "Invalid pagination parameters" });
+    }
     const queryValues = [];
     let queryStr = `
         SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url,
-        COUNT(comments.comment_id) AS comment_count
+        CAST(COUNT(comments.comment_id) AS INTEGER) AS comment_count
         FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
     if (topic) {
         queryStr += ` WHERE topic = $1`;
         queryValues.push(topic);
     }
-    queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`
-        return db.query(queryStr, queryValues)
-        .then(( { rows }) => {
-            if (rows.length === 0 && topic) {
+    queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+    const offset = (p -1) * limit;
+    queryStr += ` LIMIT $${queryValues.length + 1} OFFSET $${queryValues.length + 2};`;
+    queryValues.push(limit, offset);
+    const countQueryStr = `SELECT COUNT(*) AS total_count FROM articles ${topic ? `WHERE topic = $1` : ''}`;
+        return Promise.all([
+            db.query(queryStr, queryValues),
+            db.query(countQueryStr, topic ? [topic] : [])
+        ]).then(([articlesResult, countResult]) => {
+            const { rows: articles } = articlesResult;
+            const { rows: countRows } = countResult;
+            if (articles.length === 0 && topic) {
                 return Promise.reject({ status: 404, msg: "Topic not found" });
             }
-            return rows
-            .map((article) => ({
-                ...article,
-                comment_count: Number(article.comment_count),
-            }));
+            return {
+                articles, total_count: Number(countRows[0].total_count),
+            };
         });
 };
 

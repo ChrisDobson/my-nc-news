@@ -1,11 +1,13 @@
 const { selectArticles, addArticle, selectSingleArticle, updateArticle, removeArticle } = require("../models/articles.model");
 
-//TASKS 5, 11, 12
+//TASKS 5, 11, 12, 20
 exports.getArticles = (req, res, next) => {
-    const { sort_by = 'created_at', order = 'desc', topic } = req.query
-    selectArticles(sort_by, order, topic)
-    .then((articles) => {
-        res.status(200).send({ articles });
+    const { sort_by = 'created_at', order = 'desc', topic, limit = 10, p = 1 } = req.query;
+    const parsedLimit = parseInt(limit, 10);
+    const parsedPage = parseInt(p, 10);
+    selectArticles(sort_by, order, topic, parsedLimit, parsedPage)
+    .then(({ articles, total_count }) => {
+        res.status(200).send({ articles, total_count });
     })
     .catch(next);
 };

@@ -28,7 +28,7 @@ describe('GET /api/topics', () => {
     return request(app)
     .get('/api/topics')
     .expect(200)
-    .then(({body}) => {
+    .then(({ body }) => {
       const { topics } = body;
       expect(Array.isArray(topics)).toBe(true);
       topics.forEach((topic) => {
@@ -88,7 +88,7 @@ describe('GET /api/articles', () => {
     return request(app)
       .get('/api/articles')
       .expect(200)
-      .then(({body}) => {
+      .then(({ body }) => {
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("created_at", { descending: true });
@@ -316,7 +316,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       return request(app)
       .get('/api/users')
       .expect(200)
-      .then(({body}) => {
+      .then(({ body }) => {
         const { users } = body;
         expect(Array.isArray(users)).toBe(true);
         expect(users.length).toBe(4);
@@ -333,13 +333,13 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
     });
 
-//TASK 11 (which builds on task 5)
+//TASK 11 (builds on task 5)
 describe('GET /api/articles', () => {
   test('200: sorts articles by a valid column in ascending order', () => {
     return request(app)
       .get('/api/articles?sort_by=title&order=asc')
       .expect(200)
-      .then(({body}) => {
+      .then(({ body }) => {
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
         expect(articles).toBeSortedBy("title", { ascending: true });
@@ -364,7 +364,7 @@ describe('GET /api/articles', () => {
     return request(app)
       .get('/api/articles?sort_by=votes')
       .expect(200)
-      .then(({body}) => {
+      .then(({ body }) => {
         const { articles } = body;
         expect(articles).toBeSortedBy("votes", { descending: true });
         articles.forEach((article) => {
@@ -388,7 +388,7 @@ describe('GET /api/articles', () => {
     return request(app)
       .get('/api/articles?order=asc')
       .expect(200)
-      .then(({body}) => {
+      .then(({ body }) => {
         const { articles } = body;
         expect(articles).toBeSortedBy("created_at", { ascending: true });
         articles.forEach((article) => {
@@ -412,7 +412,7 @@ describe('GET /api/articles', () => {
     return request(app)
       .get('/api/articles?sort_by=not_a_column')
       .expect(400)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("Invalid sort_by column");
       });
     });
@@ -420,19 +420,19 @@ describe('GET /api/articles', () => {
     return request(app)
       .get('/api/articles?order=invalid')
       .expect(400)
-      .then(({body}) => {
+      .then(({ body }) => {
         expect(body.msg).toBe("Invalid order value");
       });
     });
   });
 
-  //TASK 12 (which builds on tasks 5 & 11)
+  //TASK 12 (builds on tasks 5 & 11)
   describe('GET /api/articles', () => {
     test('200: serves an array of articles, filtered by topic', () => {
       return request(app)
         .get('/api/articles?topic=cats')
         .expect(200)
-        .then(({body}) => {
+        .then(({ body }) => {
           const { articles } = body;
           expect(Array.isArray(articles)).toBe(true);
           expect(articles).toBeSortedBy("created_at", { descending: true });
@@ -457,7 +457,7 @@ describe('GET /api/articles', () => {
       return request(app)
         .get('/api/articles?sort_by=author&order=asc&topic=mitch')
         .expect(200)
-        .then(({body}) => {
+        .then(({ body }) => {
           const { articles } = body;
           expect(Array.isArray(articles)).toBe(true);
           expect(articles).toBeSortedBy("author", { ascending: true });
@@ -482,13 +482,13 @@ describe('GET /api/articles', () => {
       return request(app)
         .get('/api/articles?topic=banana')
         .expect(404)
-        .then(({body}) => {
+        .then(({ body }) => {
             expect(body.msg).toBe('Topic not found');
           });
         });
       });
 
-//TASK 13 (which builds on task 4)
+//TASK 13 (builds on task 4)
 describe('GET /api/articles/:article_id', () => {
   test('200: serves the correct article object, now including comment_count', () => {
       return request(app)
@@ -680,7 +680,81 @@ describe('POST /api/articles', () => {
   });
 });
 
-//TASK 20
+//TASK 20 (builds on tasks 5, 11 & 12)
+ describe('GET /api/articles', () => {
+  test('200: serves an array of articles, with a default page limit of 10', () => {
+    return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(10);
+        expect(body.total_count).toBeGreaterThan(10);
+        body.articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            }));
+          expect(article.body).toBeUndefined();
+        });
+        });
+      });
+test('200: serves an array of articles, with page limit and starting page inputted by user', () => {
+    return request(app)
+      .get('/api/articles?limit=5&p=2')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(5);
+        expect(body.total_count).toBeGreaterThan(5);
+        body.articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(Number),
+            }));
+          expect(article.body).toBeUndefined();
+        });
+        });
+      });
+test('200: serves an empty array if inputted page exceeds total articles', () => {
+    return request(app)
+      .get('/api/articles?p=9999')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toHaveLength(0);
+        expect(body.total_count).toBeGreaterThan(0);
+        });
+      });
+test('400: serves an error message if inputted limit is invalid', () => {
+    return request(app)
+      .get('/api/articles?limit=0')
+      .expect(400)
+      .then(({ body }) => {
+          expect(body.msg).toBe('Invalid pagination parameters');
+        });
+      });
+test('400: serves an error message if inputted page is invalid', () => {
+    return request(app)
+      .get('/api/articles?p=-1')
+      .expect(400)
+      .then(({ body }) => {
+          expect(body.msg).toBe('Invalid pagination parameters');
+        });
+      });
+    });
+
 //TASK 21
 
 //TASK 22
