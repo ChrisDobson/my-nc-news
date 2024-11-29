@@ -1,8 +1,15 @@
 const db = require("../db/connection");
 
 //TASK 6
-exports.selectComments = (article_id) => {
-    return db.query(`SELECT * FROM comments WHERE article_id = $1;`, [article_id]).then(({ rows }) => {
+exports.selectComments = (article_id, limit = 10, p = 1) => {
+    if (isNaN(limit) || limit <= 0 || isNaN(p) || p<= 0) {
+        return Promise.reject({ status: 400, msg: "Invalid pagination parameters"});
+    }
+    const offset = (p - 1) * limit;
+    const queryValues = [article_id, limit, offset]
+    const queryStr = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;`;
+    return db.query(queryStr, queryValues)
+    .then(({ rows }) => {
         if (rows.length === 0) {
             return Promise.reject({ status: 404, msg: "No comments found"});
         }

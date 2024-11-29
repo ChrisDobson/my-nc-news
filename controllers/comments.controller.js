@@ -3,7 +3,10 @@ const { selectComments, addComment, removeComment, updateComment } = require("..
 //TASK 6
 exports.getComments = (req, res, next) => {
     const { article_id } = req.params;
-    selectComments(article_id)
+    const { limit = 10, p = 1 } = req.query;
+    const parsedLimit = parseInt(limit, 10);
+    const parsedPage = parseInt(p, 10);
+    selectComments(article_id, parsedLimit, parsedPage)
     .then((comments) => {
         res.status(200).send({ comments });
     })
