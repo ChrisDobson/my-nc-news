@@ -43,27 +43,28 @@ describe('GET /api/topics', () => {
     });
   });
 
-//TASK 4 (see also task 13)
+//TASKS 4 & 13
 describe('GET /api/articles/:article_id', () => {
   test('200: serves the correct article object when valid article_id provided', () => {
       return request(app)
-      .get('/api/articles/2')
+      .get('/api/articles/3')
       .expect(200)
       .then(({ body }) => {
           expect(body.article).toEqual(
             expect.objectContaining({
               author: "icellusedkars",
-              title: "Sony Vaio; or, The Laptop",
-              article_id: 2,
-              body: expect.any(String),
+              title: "Eight pug gifs that remind me of mitch",
+              article_id: 3,
+              body: "some gifs",
               topic: "mitch",
-              created_at: "2020-10-16T05:03:00.000Z",
+              created_at: "2020-11-03T09:12:00.000Z",
               votes: 0,
-              article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-          })
+              article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+              comment_count: 2
+            })
           );
         });
-        });
+      });
   test("400: responds with 'Bad request' if passed an invalid article ID", () => {
       return request(app)
         .get("/api/articles/not-an-id")
@@ -71,7 +72,7 @@ describe('GET /api/articles/:article_id', () => {
         .then(({ body }) => {
           expect(body.msg).toBe("Bad request: Invalid input");
         });
-    });
+      });
   test("404: responds with error message if passed a valid article ID that does not exist in the database", () => {
       return request(app)
         .get("/api/articles/9999")
@@ -79,19 +80,19 @@ describe('GET /api/articles/:article_id', () => {
         .then(({ body: { msg } }) => {
           expect(msg).toBe("Article ID not found");
         });
-    }); 
       });
+    });
 
-//TASK 5 (see also tasks 11 & 12)
+//TASKS 5, 11, 12 & 21
 describe('GET /api/articles', () => {
-  test('200: serves an array of all articles, sorted by "created_at" in descending order', () => {
+  test('200: serves an array of all articles, with a default page limit of 10 and no "body" property', () => {
     return request(app)
       .get('/api/articles')
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
         expect(Array.isArray(articles)).toBe(true);
-        expect(articles).toBeSortedBy("created_at", { descending: true });
+        expect(articles).toHaveLength(10);
         articles.forEach((article) => {
           expect(article).toEqual(
             expect.objectContaining({
@@ -109,17 +110,114 @@ describe('GET /api/articles', () => {
         });
         });
       });
+    test('200: sorts articles by a valid column in ascending order', () => {
+      return request(app)
+        .get('/api/articles?sort_by=title&order=asc')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("title", { ascending: true });
+        });
+      });
+    test('200: if only a sort_by column is provided, default order is descending', () => {
+      return request(app)
+        .get('/api/articles?sort_by=votes')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("votes", { descending: true });
+        });
+      });
+    test('200: if only an order value is provided, default sort_by is created_at', () => {
+      return request(app)
+        .get('/api/articles?order=asc')
+        .expect(200)
+        .then(({ body }) => {
+          const { articles } = body;
+          expect(articles).toBeSortedBy("created_at", { ascending: true });
+        });
+      });
+    test('200: serves an array of articles, filtered by topic', () => {
+        return request(app)
+          .get('/api/articles?topic=cats')
+          .expect(200)
+          .then(({ body }) => {
+            const { articles } = body;
+            articles.forEach((article) => {
+              expect(article.topic).toBe("cats");
+            });
+          });
+        });
+    test('200: serves an array of articles, with page limit and starting page inputted by user', () => {
+      return request(app)
+        .get('/api/articles?limit=5&p=2')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toHaveLength(5);
+          expect(body.total_count).toBeGreaterThan(5);
+        });
+      });
+    test('200: serves an empty array if inputted page exceeds total articles', () => {
+      return request(app)
+        .get('/api/articles?p=9999')
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toHaveLength(0);
+          expect(body.total_count).toBeGreaterThan(0);
+          });
+        });
+    test('400: serves error message if sort_by column is invalid', () => {
+      return request(app)
+        .get('/api/articles?sort_by=not_a_column')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid sort_by column");
+        });
+      });
+    test('400: serves error message if order value is invalid', () => {
+      return request(app)
+        .get('/api/articles?order=invalid')
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid order value");
+        });
+      });
+    test('404: serves an error message if topic does not exist', () => {
+        return request(app)
+          .get('/api/articles?topic=banana')
+          .expect(404)
+          .then(({ body }) => {
+              expect(body.msg).toBe('Topic not found');
+            });
+          });
+    test('400: serves an error message if inputted limit is invalid', () => {
+      return request(app)
+        .get('/api/articles?limit=0')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Invalid pagination parameters');
+          });
+        });
+    test('400: serves an error message if inputted page is invalid', () => {
+      return request(app)
+        .get('/api/articles?p=-1')
+        .expect(400)
+        .then(({ body }) => {
+            expect(body.msg).toBe('Invalid pagination parameters');
+          });
+        });
     });
 
-//TASK 6
+//TASKS 6 & 21
 describe('GET /api/:article_id/comments', () => {
-  test('200: serves an array of all comments for the given article_id', () => {
+  test('200: serves an array of all comments for the given article_id, with a default page limit of 10', () => {
     return request(app)
-    .get('/api/articles/3/comments')
+    .get('/api/articles/1/comments')
     .expect(200)
     .then(({ body }) => {
       const { comments } = body;
       expect(Array.isArray(comments)).toBe(true);
+      expect(comments).toHaveLength(10);
       comments.forEach((comment) => {
         expect(comment).toEqual(
           expect.objectContaining({
@@ -128,12 +226,33 @@ describe('GET /api/:article_id/comments', () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: 3
+            article_id: 1
           })
         );
       });
       });
     });
+  test('200: serves an array of all comments for the given article_id, with page limit and starting page inputted by user', () => {
+    return request(app)
+    .get('/api/articles/1/comments?limit=5&p=2')
+    .expect(200)
+    .then(({ body }) => {
+      const { comments } = body;
+      expect(Array.isArray(comments)).toBe(true);
+      expect(body.comments).toHaveLength(5);
+      body.comments.forEach((comment) => {
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1
+          }));
+      });
+    });
+  });
     test("404: responds with error message if passed a valid article ID that does not have any comments", () => {
       return request(app)
     .get('/api/articles/2/comments')
@@ -158,6 +277,14 @@ describe('GET /api/:article_id/comments', () => {
         expect(body.msg).toBe("Bad request: Invalid input");
       });
   });
+  test('400: serves an error message if inputted limit is invalid', () => {
+    return request(app)
+      .get('/api/articles/5/comments?limit=0')
+      .expect(400)
+      .then(({ body }) => {
+          expect(body.msg).toBe('Invalid pagination parameters');
+        });
+      });
 });
 
   //TASK 7
@@ -333,185 +460,6 @@ describe("DELETE /api/comments/:comment_id", () => {
       });
     });
 
-//TASK 11 (builds on task 5)
-describe('GET /api/articles', () => {
-  test('200: sorts articles by a valid column in ascending order', () => {
-    return request(app)
-      .get('/api/articles?sort_by=title&order=asc')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(Array.isArray(articles)).toBe(true);
-        expect(articles).toBeSortedBy("title", { ascending: true });
-        articles.forEach((article) => {
-          expect(article).toEqual(
-            expect.objectContaining({
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              article_img_url: expect.any(String),
-              comment_count: expect.any(Number),
-            })
-          );
-          expect(article.body).toBeUndefined();
-        });
-        });
-      });
-  test('200: if only a sort_by column is provided, default order is descending', () => {
-    return request(app)
-      .get('/api/articles?sort_by=votes')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toBeSortedBy("votes", { descending: true });
-        articles.forEach((article) => {
-          expect(article).toEqual(
-            expect.objectContaining({
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              article_img_url: expect.any(String),
-              comment_count: expect.any(Number),
-            })
-          );
-          expect(article.body).toBeUndefined();
-        });
-        });
-      });
-  test('200: if only an order value is provided, default sort_by is created_at', () => {
-    return request(app)
-      .get('/api/articles?order=asc')
-      .expect(200)
-      .then(({ body }) => {
-        const { articles } = body;
-        expect(articles).toBeSortedBy("created_at", { ascending: true });
-        articles.forEach((article) => {
-          expect(article).toEqual(
-            expect.objectContaining({
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              article_img_url: expect.any(String),
-              comment_count: expect.any(Number),
-            })
-          );
-          expect(article.body).toBeUndefined();
-        });
-        });
-      });
-  test('400: serves error message if sort_by column is invalid', () => {
-    return request(app)
-      .get('/api/articles?sort_by=not_a_column')
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid sort_by column");
-      });
-    });
-  test('400: serves error message if order value is invalid', () => {
-    return request(app)
-      .get('/api/articles?order=invalid')
-      .expect(400)
-      .then(({ body }) => {
-        expect(body.msg).toBe("Invalid order value");
-      });
-    });
-  });
-
-  //TASK 12 (builds on tasks 5 & 11)
-  describe('GET /api/articles', () => {
-    test('200: serves an array of articles, filtered by topic', () => {
-      return request(app)
-        .get('/api/articles?topic=cats')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(Array.isArray(articles)).toBe(true);
-          expect(articles).toBeSortedBy("created_at", { descending: true });
-          articles.forEach((article) => {
-            expect(article).toEqual(
-              expect.objectContaining({
-                author: expect.any(String),
-                title: expect.any(String),
-                article_id: expect.any(Number),
-                topic: "cats",
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-                comment_count: expect.any(Number),
-              })
-            );
-            expect(article.body).toBeUndefined();
-          });
-          });
-        });
-  test('200: serves an array of articles, filtered by topic and sorted by order queries', () => {
-      return request(app)
-        .get('/api/articles?sort_by=author&order=asc&topic=mitch')
-        .expect(200)
-        .then(({ body }) => {
-          const { articles } = body;
-          expect(Array.isArray(articles)).toBe(true);
-          expect(articles).toBeSortedBy("author", { ascending: true });
-          articles.forEach((article) => {
-            expect(article).toEqual(
-              expect.objectContaining({
-                author: expect.any(String),
-                title: expect.any(String),
-                article_id: expect.any(Number),
-                topic: "mitch",
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-                comment_count: expect.any(Number),
-              })
-            );
-            expect(article.body).toBeUndefined();
-          });
-          });
-        });
-  test('404: serves an error message if topic does not exist', () => {
-      return request(app)
-        .get('/api/articles?topic=banana')
-        .expect(404)
-        .then(({ body }) => {
-            expect(body.msg).toBe('Topic not found');
-          });
-        });
-      });
-
-//TASK 13 (builds on task 4)
-describe('GET /api/articles/:article_id', () => {
-  test('200: serves the correct article object, now including comment_count', () => {
-      return request(app)
-      .get('/api/articles/3')
-      .expect(200)
-      .then(({ body }) => {
-          expect(body.article).toEqual(
-            expect.objectContaining({
-              author: "icellusedkars",
-              title: "Eight pug gifs that remind me of mitch",
-              article_id: 3,
-              body: "some gifs",
-              topic: "mitch",
-              created_at: "2020-11-03T09:12:00.000Z",
-              votes: 0,
-              article_img_url: "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-              comment_count: 2
-            })
-          );
-        });
-        });
-      });
-
 //TASK 17
 describe('GET /api/users/:username', () => {
   test('200: serves the correct user object when valid username provided', () => {
@@ -679,83 +627,6 @@ describe('POST /api/articles', () => {
     });
   });
 });
-
-//TASK 20 (builds on tasks 5, 11 & 12)
- describe('GET /api/articles', () => {
-  test('200: serves an array of articles, with a default page limit of 10', () => {
-    return request(app)
-      .get('/api/articles')
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles).toHaveLength(10);
-        expect(body.total_count).toBeGreaterThan(10);
-        body.articles.forEach((article) => {
-          expect(article).toEqual(
-            expect.objectContaining({
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              article_img_url: expect.any(String),
-              comment_count: expect.any(Number),
-            }));
-          expect(article.body).toBeUndefined();
-        });
-        });
-      });
-test('200: serves an array of articles, with page limit and starting page inputted by user', () => {
-    return request(app)
-      .get('/api/articles?limit=5&p=2')
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles).toHaveLength(5);
-        expect(body.total_count).toBeGreaterThan(5);
-        body.articles.forEach((article) => {
-          expect(article).toEqual(
-            expect.objectContaining({
-              author: expect.any(String),
-              title: expect.any(String),
-              article_id: expect.any(Number),
-              topic: expect.any(String),
-              created_at: expect.any(String),
-              votes: expect.any(Number),
-              article_img_url: expect.any(String),
-              comment_count: expect.any(Number),
-            }));
-          expect(article.body).toBeUndefined();
-        });
-        });
-      });
-test('200: serves an empty array if inputted page exceeds total articles', () => {
-    return request(app)
-      .get('/api/articles?p=9999')
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.articles).toHaveLength(0);
-        expect(body.total_count).toBeGreaterThan(0);
-        });
-      });
-test('400: serves an error message if inputted limit is invalid', () => {
-    return request(app)
-      .get('/api/articles?limit=0')
-      .expect(400)
-      .then(({ body }) => {
-          expect(body.msg).toBe('Invalid pagination parameters');
-        });
-      });
-test('400: serves an error message if inputted page is invalid', () => {
-    return request(app)
-      .get('/api/articles?p=-1')
-      .expect(400)
-      .then(({ body }) => {
-          expect(body.msg).toBe('Invalid pagination parameters');
-        });
-      });
-    });
-
-//TASK 21
 
 //TASK 22
 describe('POST /api/topics', () => {

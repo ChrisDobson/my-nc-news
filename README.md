@@ -67,4 +67,26 @@ TASK 14: CORE: Host application
 Host v1 of the API using Supabase and Render.
 
 TASK 15: CORE: Complete README
-NB: There are 8 more ADVANCED tasks, but at the time of writing (27/11/2024), these are not yet complete.
+
+TASK 16: ADVANCED: Express Routers
+
+TASK 17: ADVANCED: GET /api/users/:username
+Should: be available on /api/users/:username; return a user by username.
+
+TASK 18: ADVANCED: PATCH /api/comments/:comment_id
+Should: be available on /api/comments/:comment_id; update the votes on a comment given the comment's comment_id.
+
+TASK 19: ADVANCED: POST /api/articles
+Should: be available on /api/articles; add a new article.
+
+TASK 20: ADVANCED: GET /api/articles (pagination)
+Should: be available on /api/articles; add pagination when retrieving articles.
+
+TASK 21: ADVANCED: GET /api/articles/:article_id/comments (pagination)
+Should: be available on /api/articles/:article_id/comments; add pagination when retrieving comments for an article.
+
+TASK 22: ADVANCED: POST /api/topics
+Should: be available on /api/topics; add new topic.
+
+TASK 23: ADVANCED: DELETE /api/articles/:article_id
+Should: be available on /api/articles/:article_id; delete an article based on an id, and its respective comments.

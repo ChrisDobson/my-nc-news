@@ -151,7 +151,10 @@
 
   "GET /api/articles/:article_id/comments": {
     "description": "200: serves an array of all comments for the given article_id",
-    "queries": {},
+    "queries": {
+      "limit":"number of articles per page, defaults to 10",
+      "p":"page number, defaults to 1"
+    },
     "exampleResponse": {
       "comments": [
         {
