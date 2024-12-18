@@ -26,6 +26,7 @@ exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic, limit =
     const offset = (p -1) * limit;
     queryStr += ` LIMIT $${queryValues.length + 1} OFFSET $${queryValues.length + 2};`;
     queryValues.push(limit, offset);
+    
     const countQueryStr = `SELECT COUNT(*) AS total_count FROM articles ${topic ? `WHERE topic = $1` : ''}`;
         return Promise.all([
             db.query(queryStr, queryValues),
