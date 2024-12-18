@@ -51,7 +51,7 @@ module.exports = [
   },
   {
     title:
-      "JavaScript’s Apply, Call, and Bind Methods are Essential for JavaScript Professionals",
+      "JavaScript’s Apply, Call, and Bind Methods are Essential for JS Professionals",
     topic: "coding",
     author: "grumpy19",
     body: "Functions are objects in JavaScript, as you should know by now, if you have read any of the prerequisite articles. And as objects, functions have methods, including the powerful Apply, Call, and Bind methods. On the one hand, Apply and Call are nearly identical and are frequently used in JavaScript for borrowing methods and for setting the this value explicitly. We also use Apply for variable-arity functions; you will learn more about this in a bit.",
