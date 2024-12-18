@@ -2,7 +2,7 @@ const db = require("../db/connection");
 
 //TASKS 5, 11, 12, 20
 exports.selectArticles = (sort_by = 'created_at', order = 'desc', topic, limit = 10, p = 1) => {
-    const validColumns = ['author', 'title', 'article_id', 'created_at', 'votes'];
+    const validColumns = ['author', 'title', 'article_id', 'topic', 'created_at', 'votes', 'comment_count'];
     const validOrders = ['asc', 'desc'];
     if (!validColumns.includes(sort_by)) {
         return Promise.reject({ status: 400, msg: "Invalid sort_by column"});
