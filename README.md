@@ -1,10 +1,10 @@
-# Northcoders News API
+# Northhttps://northcoders-app.netlify.app/coders News API
 
 Welcome!
 
-This portfolio project was created in Week 7 of a Software Development in JavaScript Skills BootCamp, provided by [Northcoders] (https://northcoders.com/)
+This portfolio project was created in Week 7 of a Software Development in JavaScript Skills BootCamp, provided by [Northcoders](https://northcoders.com/).
 
-You can view the hosted application by using this link: https://my-nc-news-2zd4.onrender.com/api
+You can view the hosted application here: https://my-nc-news-2zd4.onrender.com/api
 Use one of the app.get endpoints provided in the below summary, e.g. /api/topics; /api/articles; /api/users
 
 If you would like to clone this repository: you will need to add a .env.test file and a .env.development file, with the following contents:
