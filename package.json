@@ -1,7 +1,7 @@
 {
   "name": "be-nc-news",
   "version": "1.0.0",
-  "description": "bc-nc-news",
+  "description": "A backend API for NC-News, built with Node.js and PostgreSQL.",
   "main": "listen.js",
   "scripts": {
     "start": "node listen.js",
@@ -13,15 +13,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/northcoders/be-nc-news.git"
+    "url": "https://github.com/ChrisDobson/my-nc-news"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/northcoders/be-nc-news/issues"
-  },
-  "homepage": "https://github.com/northcoders/be-nc-news#readme",
+  "keywords": ["news", "API", "backend", "Node.JS", "PostgreSQL"],
+  "author": "Christopher Dobson <christopher.dobson14@gmail.com>",
+  "licence": "MIT",
   "devDependencies": {
     "husky": "^8.0.2",
     "jest": "^27.5.1",
